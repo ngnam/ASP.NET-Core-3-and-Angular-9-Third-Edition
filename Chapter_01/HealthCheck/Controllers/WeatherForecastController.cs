@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 
 namespace HealthCheck.Controllers
 {
+    [ApiVersion("1")]
+    [ApiVersion("2")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -23,8 +25,8 @@ namespace HealthCheck.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet("all"), MapToApiVersion("1")]
+        public IEnumerable<WeatherForecast> GetV1()
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -35,5 +37,20 @@ namespace HealthCheck.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("all"), MapToApiVersion("2")]
+        public IEnumerable<WeatherForecast> GetV2()
+        {
+            var rng = new Random();
+            return Enumerable.Range(1, 2).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            })
+            .ToArray();
+        }
+
+
     }
 }
